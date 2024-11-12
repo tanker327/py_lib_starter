@@ -9,11 +9,12 @@ import sys
 import argparse
 from pathlib import Path
 from typing import Dict, Any
-import json
 
 # Template content for different file types
-TEMPLATES: Dict[str, str] = {
-    "pyproject.toml": '''[build-system]
+def get_templates(project_name: str) -> Dict[str, str]:
+    """Return templates with project name already formatted."""
+    return {
+    "pyproject.toml": f'''[build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
@@ -23,7 +24,7 @@ version = "0.1.0"
 description = "Internal library for common functionality across projects"
 requires-python = ">=3.8"
 authors = [
-    {{name = "Your Name", email = "your.email@company.com"}},
+    {{name = "Your Name", email = "your.email@company.com"}}
 ]
 dependencies = [
     "numpy>=1.20.0",
@@ -47,7 +48,7 @@ profile = "black"
 multi_line_output = 3
 ''',
 
-    "setup.cfg": '''[metadata]
+    "setup.cfg": f'''[metadata]
 name = {project_name}
 version = 0.1.0
 description = Internal library for common functionality across projects
@@ -74,7 +75,7 @@ dev =
     mypy>=0.950
 ''',
 
-    "README.md": '''# {project_name}
+    "README.md": f'''# {project_name}
 
 Internal library for common functionality across projects.
 
@@ -165,7 +166,7 @@ build/
 *.egg-info/
 ''',
 
-    "src/__init__.py": '''"""
+    f"src/{project_name}/__init__.py": f'''"""
 {project_name} - Internal library for common functionality across projects
 """
 
@@ -176,7 +177,7 @@ from .exceptions import *
 __version__ = "0.1.0"
 ''',
 
-    "src/core.py": '''"""Core functionality of the library."""
+    f"src/{project_name}/core.py": '''"""Core functionality of the library."""
 from typing import Any, Dict, List, Optional
 
 class CoreFeature:
@@ -198,7 +199,7 @@ class CoreFeature:
         return data
 ''',
 
-    "src/utils.py": '''"""Utility functions for the library."""
+    f"src/{project_name}/utils.py": '''"""Utility functions for the library."""
 from typing import Any, List
 import logging
 
@@ -228,7 +229,7 @@ def validate_input(data: List[Any]) -> bool:
     return True
 ''',
 
-    "src/exceptions.py": '''"""Custom exceptions for the library."""
+    f"src/{project_name}/exceptions.py": '''"""Custom exceptions for the library."""
 
 class MyLibraryError(Exception):
     """Base exception for the library."""
@@ -245,13 +246,13 @@ class ProcessingError(MyLibraryError):
 
     "tests/__init__.py": '',
 
-    "tests/test_core.py": '''import pytest
+    "tests/test_core.py": f'''import pytest
 from {project_name}.core import CoreFeature
 from {project_name}.exceptions import ValidationError
 
 def test_core_feature_initialization():
     feature = CoreFeature()
-    assert feature.config == {}
+    assert feature.config == {{}}
     
     config = {{"param": "value"}}
     feature = CoreFeature(config)
@@ -264,7 +265,7 @@ def test_core_feature_process():
     assert isinstance(result, list)
 ''',
 
-    "tests/test_utils.py": '''import pytest
+    "tests/test_utils.py": f'''import pytest
 from {project_name}.utils import validate_input
 from {project_name}.exceptions import ValidationError
 
@@ -272,12 +273,11 @@ def test_validate_input():
     valid_data = [1, 2, 3]
     assert validate_input(valid_data) is True
     
-    invalid_data = None
     with pytest.raises(ValidationError):
-        validate_input(invalid_data)
+        validate_input(None)
 ''',
 
-    "docs/api.md": '''# API Documentation
+    "docs/api.md": f'''# API Documentation
 
 ## Core
 
@@ -304,7 +304,7 @@ Main feature class of the library.
 - `ProcessingError`
 ''',
 
-    "docs/getting_started.md": '''# Getting Started
+    "docs/getting_started.md": f'''# Getting Started
 
 ## Installation
 
@@ -332,7 +332,7 @@ result = feature.process(data)
 ```
 ''',
 
-    "docs/examples.md": '''# Examples
+    "docs/examples.md": f'''# Examples
 
 ## Basic Usage
 
@@ -357,12 +357,12 @@ try:
     feature = CoreFeature()
     result = feature.process(data)
 except ValidationError as e:
-    print(f"Validation failed: {e}")
+    print(f"Validation failed: {{e}}")
 except ProcessingError as e:
-    print(f"Processing failed: {e}")
+    print(f"Processing failed: {{e}}")
 ```
 '''
-}
+    }
 
 def create_directory_structure(base_path: Path, project_name: str) -> None:
     """Create the directory structure for the project."""
@@ -380,10 +380,10 @@ def create_directory_structure(base_path: Path, project_name: str) -> None:
     for dir_path in dirs:
         (base_path / dir_path).mkdir(parents=True, exist_ok=True)
 
-def create_file(path: Path, content: str, project_name: str) -> None:
+def create_file(path: Path, content: str) -> None:
     """Create a file with the given content."""
     with open(path, 'w', encoding='utf-8') as f:
-        f.write(content.format(project_name=project_name))
+        f.write(content)
 
 def setup_project(project_name: str, base_path: str = None) -> None:
     """Set up the entire project structure."""
@@ -395,11 +395,16 @@ def setup_project(project_name: str, base_path: str = None) -> None:
     # Create directory structure
     create_directory_structure(base_path, project_name)
     
+    # Get templates with project name formatted
+    templates = get_templates(project_name)
+    
     # Create files
-    for filepath, content in TEMPLATES.items():
+    for filepath, content in templates.items():
         # Handle special cases for src and tests directories
-        if filepath.startswith('src/'):
-            actual_path = base_path / 'src' / project_name / filepath[4:]
+        if filepath.startswith(f'src/{project_name}/'):
+            actual_path = base_path / 'src' / project_name / filepath.split('/')[-1]
+        elif filepath.startswith('src/'):
+            actual_path = base_path / 'src' / filepath[4:]
         else:
             actual_path = base_path / filepath
         
@@ -407,7 +412,7 @@ def setup_project(project_name: str, base_path: str = None) -> None:
         actual_path.parent.mkdir(parents=True, exist_ok=True)
         
         # Create the file
-        create_file(actual_path, content, project_name)
+        create_file(actual_path, content)
 
 def main():
     """Main function to run the script."""
