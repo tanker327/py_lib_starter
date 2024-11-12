@@ -26,18 +26,27 @@ requires-python = ">=3.8"
 authors = [
     {{name = "Your Name", email = "your.email@company.com"}}
 ]
-dependencies = [
-    "numpy>=1.20.0",
-    "pandas>=1.3.0",
-]
+dependencies = []  # Keep empty by default, add specific dependencies as needed
 
 [project.optional-dependencies]
+# Development tools
 dev = [
     "pytest>=7.0.0",
     "black>=22.0.0",
     "isort>=5.0.0",
     "mypy>=0.950",
 ]
+# Example optional feature groups (commented out by default)
+# http = [
+#     "requests>=2.28.0",
+# ]
+# yaml = [
+#     "pyyaml>=6.0",
+# ]
+# data = [
+#     "pandas>=1.3.0",
+#     "numpy>=1.20.0",
+# ]
 
 [tool.black]
 line-length = 88
@@ -46,6 +55,11 @@ target-version = ['py38']
 [tool.isort]
 profile = "black"
 multi_line_output = 3
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v -s --tb=short"
 ''',
 
     "setup.cfg": f'''[metadata]
@@ -61,8 +75,7 @@ package_dir =
 packages = find:
 python_requires = >=3.8
 install_requires =
-    numpy>=1.20.0
-    pandas>=1.3.0
+    # Add your package dependencies here
 
 [options.packages.find]
 where = src
@@ -73,38 +86,180 @@ dev =
     black>=22.0.0
     isort>=5.0.0
     mypy>=0.950
+# Example optional dependencies (commented out by default)
+# http =
+#     requests>=2.28.0
+# yaml =
+#     pyyaml>=6.0
+# data =
+#     pandas>=1.3.0
+#     numpy>=1.20.0
 ''',
 
     "README.md": f'''# {project_name}
 
 Internal library for common functionality across projects.
 
+## Features
+
+- Modular architecture with optional feature groups
+- Type-hinted APIs
+- Comprehensive test coverage
+- Well-documented codebase
+
 ## Installation
+
+### Basic Installation
 
 ```bash
 pip install -e .
 ```
 
+### Development Installation
+
+Install with development tools (pytest, black, isort, mypy):
+```bash
+pip install -e ".[dev]"
+```
+
+### Optional Features
+
+The library supports optional feature groups that can be installed based on your needs:
+
+```bash
+# Install specific feature group (uncomment in pyproject.toml first)
+pip install -e ".[http]"     # HTTP related functionality
+pip install -e ".[yaml]"     # YAML processing support
+pip install -e ".[data]"     # Data processing tools
+
+# Install multiple feature groups
+pip install -e ".[dev,http,data]"
+```
+
 ## Usage
 
+Basic usage:
 ```python
 from {project_name} import CoreFeature
+from {project_name}.utils import setup_logging
 
+# Set up logging
+setup_logging()
+
+# Initialize and use the core feature
 feature = CoreFeature()
 result = feature.process(data)
 ```
 
+Error handling:
+```python
+from {project_name} import CoreFeature
+from {project_name}.exceptions import ValidationError, ProcessingError
+
+try:
+    feature = CoreFeature()
+    result = feature.process(data)
+except ValidationError as e:
+    print(f"Validation failed: {{e}}")
+except ProcessingError as e:
+    print(f"Processing failed: {{e}}")
+```
+
 ## Development
 
-1. Clone the repository
+1. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\\Scripts\\activate
+   ```
+
 2. Install development dependencies:
    ```bash
    pip install -e ".[dev]"
    ```
+
 3. Run tests:
    ```bash
+   # Run all tests
    pytest
+
+   # Run tests with coverage
+   pytest --cov={project_name}
+
+   # Run specific test file
+   pytest tests/test_core.py
    ```
+
+4. Code formatting and linting:
+   ```bash
+   # Format code
+   black .
+
+   # Sort imports
+   isort .
+
+   # Type checking
+   mypy src
+   ```
+
+## Project Structure
+
+```
+{project_name}/
+├── src/
+│   └── {project_name}/
+│       ├── __init__.py      # Package initialization
+│       ├── core.py          # Core functionality
+│       ├── utils.py         # Utility functions
+│       └── exceptions.py    # Custom exceptions
+├── tests/
+│   ├── __init__.py
+│   ├── test_core.py        # Core tests
+│   └── test_utils.py       # Utility tests
+├── docs/
+│   ├── api.md              # API documentation
+│   ├── getting_started.md  # Getting started guide
+│   └── examples.md         # Usage examples
+├── pyproject.toml          # Project configuration
+├── setup.cfg              # Setup configuration
+├── README.md             # This file
+└── CHANGELOG.md         # Version changelog
+```
+
+## Adding New Features
+
+1. Create new modules in `src/{project_name}/`
+2. Add corresponding test files in `tests/`
+3. Update documentation in `docs/`
+4. Add any new dependencies to `pyproject.toml`
+
+## Dependencies
+
+The package uses a modular dependency system:
+
+- **Core**: No dependencies required
+- **Development**: pytest, black, isort, mypy
+- **Optional Groups** (uncomment in pyproject.toml as needed):
+  - `http`: requests
+  - `yaml`: pyyaml
+  - `data`: pandas, numpy
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Run tests and ensure they pass
+5. Submit a pull request
+
+## License
+
+[Your License Here]
+
+## Contact
+
+[Your Contact Information]
+'''
 ''',
 
     "CHANGELOG.md": '''# Changelog
