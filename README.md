@@ -1,250 +1,204 @@
-# Python Library Setup Tool
+# py lib starter
 
-A sophisticated command-line tool for generating standardized Python library project structures with modern best practices, comprehensive configurations, and development tools.
+A powerful command-line tool for generating standardized Python library project structures. This tool helps you create well-organized Python packages with modern best practices, complete configuration files, and development tools setup.
 
 ## Features
 
 - 🎯 Interactive project setup with user information collection
-- 📁 Standardized project structure generation
-- ⚙️ Modern configuration with pyproject.toml
-- 🐍 Virtual environment setup
-- 🔧 Development tools integration (pytest, black, isort, mypy)
-- 📝 Comprehensive documentation templates
-- 🔒 Git initialization with hooks
-- 🎨 Customizable project templates
-- 🛠️ Modular and extensible architecture
-
-## Project Structure
-
-```
-py_lib_starter/
-├── __init__.py
-├── main.py              # Main script and CLI handling
-├── templates/
-│   ├── __init__.py
-│   ├── pyproject.py     # pyproject.toml template
-│   ├── setup_cfg.py     # setup.cfg template
-│   ├── readme.py        # README.md template
-│   ├── gitignore.py     # .gitignore template
-│   ├── docs.py          # Documentation templates
-│   ├── core.py         # Core module templates
-│   ├── tests.py        # Test file templates
-│   └── changelog.py    # CHANGELOG.md template
-├── utils/
-│   ├── __init__.py
-│   ├── file_ops.py     # File operations
-│   ├── validation.py   # Input validation
-│   └── user_input.py   # User input handling
-└── config/
-    ├── __init__.py
-    └── default.py      # Default configuration
-```
+- 📁 Modern project structure with src-layout
+- ⚙️ Comprehensive configuration files (pyproject.toml, setup.cfg)
+- 🐍 Support for both pip and conda package management
+- 🔧 Pre-configured development tools (pytest, black, isort, mypy)
+- 📝 Auto-generated documentation templates
+- 🔒 License file generation
+- 🎨 Git initialization and configuration
 
 ## Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/tanker327/py_lib_starter.git
-cd library-setup
-```
+### Using pip
 
-2. Create and activate a virtual environment:
 ```bash
+# Clone the repository
+git clone https://github.com/yourusername/py_lib_starter.git
+cd py_lib_starter
+
+# Create and activate virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install in development mode
+pip install -e .
 ```
 
-3. Install the package in development mode:
+### Using conda
+
 ```bash
+# Clone the repository
+git clone https://github.com/yourusername/py_lib_starter.git
+cd py_lib_starter
+
+# Create and activate conda environment
+conda create -n py_lib_starter python=3.11
+conda activate py_lib_starter
+
+# Install conda-build (if you plan to build conda packages)
+conda install conda-build
+
+# Install in development mode
 pip install -e .
 ```
 
 ## Usage
 
-### Basic Usage
-
-Create a new Python library project:
-```bash
-python -m library_setup my_project_name
-```
-
-The tool will:
-1. Ask for your name and email
-2. Create the project structure
-3. Initialize git repository
-4. Set up virtual environment
-5. Configure development tools
-
-### Command Line Options
+### Creating a New Project
 
 ```bash
-python -m library_setup [OPTIONS] PROJECT_NAME
+# Basic usage
+create-pylib my_new_project
 
-Options:
-  --path PATH          Base path for project creation
-  --full-readme        Generate comprehensive README
-  -h, --help          Show help message
+# The tool will interactively ask for:
+# - Your name
+# - Your email
+# - Your GitHub username
 ```
 
 ### Generated Project Structure
 
-The tool creates a standardized project structure:
-
 ```
-my_project/
+my_new_project/
 ├── src/
-│   └── my_project/
+│   └── my_new_project/
 │       ├── __init__.py      # Package initialization
 │       ├── core.py          # Core functionality
 │       ├── utils.py         # Utility functions
 │       └── exceptions.py    # Custom exceptions
 ├── tests/
 │   ├── __init__.py
-│   ├── test_core.py
-│   └── test_utils.py
+│   ├── conftest.py         # Pytest configuration
+│   └── test_core.py        # Basic tests
 ├── docs/
 │   ├── api.md
 │   ├── getting_started.md
 │   └── examples.md
-├── scripts/            # Utility scripts
-├── examples/           # Usage examples
-├── pyproject.toml     # Project configuration
-├── setup.cfg          # Setup configuration
-├── README.md         # Project documentation
-├── CHANGELOG.md      # Version changelog
-└── .gitignore       # Git ignore rules
+├── pyproject.toml          # Project configuration
+├── setup.cfg              # Setup configuration
+├── meta.yaml             # Conda build configuration
+├── LICENSE              # MIT License
+├── README.md           # Project documentation
+└── CHANGELOG.md       # Version changelog
 ```
 
-### Configuration
+## Building Generated Projects
 
-The tool uses a modular configuration system defined in `config/default.py`:
+### Using pip
 
-```python
-# Custom configuration example
-config = {
-    'metadata': {
-        'author': 'John Doe',
-        'author_email': 'john@example.com',
-    },
-    'git_config': {
-        'init_git': True,
-        'git_hooks': {
-            'pre-commit': [
-                'black .',
-                'isort .',
-                'pytest',
-            ],
-        },
-    },
-    'venv_config': {
-        'create_venv': True,
-    },
-}
+```bash
+cd my_new_project
+
+# Install in development mode
+pip install -e ".[dev]"
+
+# Build distribution files
+python -m build
+
+# Install from wheel
+pip install dist/my_new_project-0.1.0-py3-none-any.whl
 ```
 
-### Development Tools
+### Using conda
 
-Generated projects include configuration for:
+```bash
+cd my_new_project
 
+# Build conda package
+conda build .
+
+# Install locally
+conda install --use-local my_new_project
+```
+
+## Development Tools
+
+Generated projects come with:
+
+- **Testing**: pytest with coverage reporting
 - **Code Formatting**: black, isort
 - **Type Checking**: mypy
-- **Testing**: pytest with coverage
 - **Linting**: pylint, ruff
-- **Git Hooks**: pre-commit hooks
 - **Documentation**: Markdown templates
+- **Version Control**: Git initialization
 
-## Features in Detail
+## Configuration Files
 
-### 1. Project Templates
+### pyproject.toml
+- Modern Python packaging configuration
+- Development dependencies
+- Tool configurations (black, isort, mypy)
 
-- **Modern Configuration**: Uses pyproject.toml with comprehensive settings
-- **Type Hints**: All template code includes type hints
-- **Documentation**: Ready-to-use documentation structure
-- **Testing**: Pre-configured test suite with pytest
+### meta.yaml
+- Conda build configuration
+- Package metadata
+- Build and test requirements
 
-### 2. Development Workflow
+### setup.cfg
+- Package configuration
+- Tool settings
+- Compatibility options
 
-- **Git Integration**: Automatic repository initialization
-- **Virtual Environment**: Python environment setup
-- **Development Tools**: Pre-configured development tools
-- **Code Quality**: Integrated code quality tools
+## Project Templates
 
-### 3. Project Structure
-
-- **Source Layout**: Uses the `src/` layout for better packaging
-- **Tests**: Separate test directory with examples
-- **Documentation**: Comprehensive documentation structure
-- **Scripts**: Directory for utility scripts
-
-### 4. Customization
-
-- **Templates**: Easily modify templates in the templates/ directory
-- **Configuration**: Customize default settings in config/default.py
-- **File Operations**: Extend file operations in utils/file_ops.py
-
-## Best Practices Implemented
-
-1. **Project Structure**:
-   - src/ layout for better packaging
-   - Separate test directory
-   - Comprehensive documentation
-
-2. **Development Tools**:
-   - Modern code formatting
-   - Type checking
-   - Comprehensive testing
-   - Automated quality checks
-
-3. **Documentation**:
-   - API documentation
-   - Getting started guide
-   - Usage examples
-   - Change log
-
-4. **Version Control**:
-   - Git initialization
-   - Pre-configured hooks
-   - Comprehensive .gitignore
+The tool includes templates for:
+- Core package structure
+- Test files
+- Documentation
+- Configuration files
+- License (MIT)
+- Git configuration
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests:
+2. Create your feature branch:
    ```bash
-   pytest
+   git checkout -b feature/amazing-feature
    ```
-5. Submit a pull request
+3. Make your changes and commit:
+   ```bash
+   git commit -m 'Add amazing feature'
+   ```
+4. Push to the branch:
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+5. Open a Pull Request
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Permission Errors**:
+1. **Package Not Found**
    ```bash
-   # Ensure you have write permissions
-   chmod +x main.py
-   ```
-
-2. **Import Errors**:
-   ```bash
-   # Install in development mode
+   # Make sure you're in the right directory and the package is installed
    pip install -e .
    ```
 
-3. **Git Initialization Fails**:
+2. **Conda Build Fails**
    ```bash
-   # Ensure git is installed
-   git --version
+   # Ensure conda-build is installed
+   conda install conda-build
+   
+   # Check if all required files exist
+   ls LICENSE meta.yaml
    ```
 
-### Support
-
-For issues and questions:
-1. Check the [documentation](docs/)
-2. Open an issue on GitHub
-3. Contact the maintainers
+3. **Test Failures**
+   ```bash
+   # Install development dependencies
+   pip install -e ".[dev]"
+   
+   # Run tests to verify
+   pytest
+   ```
 
 ## License
 
@@ -253,6 +207,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments
 
 - Inspired by modern Python packaging best practices
-- Built with tools and patterns from the Python community
-- Thanks to all contributors and users
-
+- Built with tools from the Python ecosystem
+- Structured following community standards
