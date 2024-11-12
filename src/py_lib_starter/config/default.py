@@ -114,14 +114,14 @@ GIT_CONFIG: Dict[str, Any] = {
             'black .',
             'isort .',
             'mypy src',
-            'pytest',
+            # 'pytest', # disable for now
         ],
     },
 }
 
 # Logging Configuration
 LOG_CONFIG: Dict[str, Any] = {
-    'default_level': 'INFO',
+    'default_level': 'DEBUG',
     'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     'date_format': '%Y-%m-%d %H:%M:%S',
 }

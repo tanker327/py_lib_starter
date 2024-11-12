@@ -8,6 +8,7 @@ import sys
 import argparse
 from pathlib import Path
 from typing import Optional, Dict, Any
+import subprocess
 
 from .utils.file_ops import create_project_structure
 from .utils.validation import validate_project_name
@@ -59,6 +60,12 @@ def setup_project(
     # Create project structure with configuration
     create_project_structure(project_name, base_path, project_config)
 
+def create_venv(path):
+    subprocess.run([sys.executable, "-m", "venv", path], check=True)
+
+def run_python_command(command):
+    subprocess.run([sys.executable, "-m"] + command, check=True)
+
 def main() -> None:
     """Main function to create the project structure."""
     try:
@@ -72,13 +79,14 @@ def main() -> None:
         print("\nWelcome to the Python Library Setup Tool!")
         print("Please provide some information about yourself.\n")
         
-        username, email = get_user_input()
+        username, email, github_username = get_user_input()
         
         # Update configuration with user information
         config = {
             'metadata': {
                 'author': username,
                 'author_email': email,
+                'github_username': github_username,
             },
             'template_config': {
                 'readme': {

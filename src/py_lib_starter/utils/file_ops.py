@@ -7,6 +7,9 @@ from pathlib import Path
 from typing import Optional, Dict, Any, List
 import logging
 
+from py_lib_starter.templates.conda_meta import get_conda_meta_template
+from py_lib_starter.templates.license import get_license_template
+
 from ..templates import (
     get_pyproject_template,
     get_setup_cfg_template,
@@ -55,8 +58,17 @@ def write_file(path: Path, content: str, mode: int = 0o644) -> None:
     Raises:
         FileOperationError: If file writing fails
     """
+    
+    print(f"Writing file: {path}")
+    
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Create file if it doesn't exist
+        if not path.exists():
+            path.touch()
+            logger.debug(f"Created new file: {path}")
+        
         path.write_text(content, encoding='utf-8')
         os.chmod(path, mode)
         logger.debug(f"Written file: {path}")
@@ -92,9 +104,20 @@ def initialize_git(project_path: Path, config: Dict[str, Any]) -> None:
         author_name = metadata.get('author')
         author_email = metadata.get('author_email')
         
-        if author_name and author_email:
-            subprocess.run(['git', 'config', 'user.name', author_name], cwd=project_path, check=True)
-            subprocess.run(['git', 'config', 'user.email', author_email], cwd=project_path, check=True)
+        # Set default git config if not provided
+        if not author_name or not author_email:
+            try:
+                # Try to get global git config
+                author_name = subprocess.check_output(['git', 'config', '--global', 'user.name'], text=True).strip()
+                author_email = subprocess.check_output(['git', 'config', '--global', 'user.email'], text=True).strip()
+            except subprocess.CalledProcessError:
+                # Use default values if global config not available
+                author_name = "Anonymous"
+                author_email = "anonymous@example.com"
+        
+        # Configure local repo
+        subprocess.run(['git', 'config', 'user.name', author_name], cwd=project_path, check=True)
+        subprocess.run(['git', 'config', 'user.email', author_email], cwd=project_path, check=True)
         
         # Initial commit
         subprocess.run(['git', 'add', '.'], cwd=project_path, check=True)
@@ -209,7 +232,29 @@ def create_project_structure(
             'README.md': get_readme_template(project_name, config),
             '.gitignore': get_gitignore_template(),
             'CHANGELOG.md': get_changelog_template(),
+            'meta.yaml': get_conda_meta_template(project_name, config),
+            'LICENSE': get_license_template(config),
         }
+        
+        # Update pyproject.toml
+        if 'pyproject.toml' in files_to_create:
+            content = files_to_create['pyproject.toml']
+            if '[tool.pytest.ini_options]' not in content:
+                content += '''
+[tool.pytest.ini_options]
+addopts = "--cov={} --cov-report=term-missing"
+testpaths = ["tests"]
+'''.format(project_name)
+            
+            if '[project.optional-dependencies]' not in content:
+                content += '\n[project.optional-dependencies]\ndev = ["pytest", "pytest-cov"]\n'
+            elif 'pytest-cov' not in content:
+                content = content.replace(
+                    '[project.optional-dependencies]\ndev = ["pytest"',
+                    '[project.optional-dependencies]\ndev = ["pytest", "pytest-cov"'
+                )
+            
+            files_to_create['pyproject.toml'] = content
         
         # Create core module files
         core_files = get_core_templates(project_name)
@@ -234,18 +279,24 @@ def create_project_structure(
         if config and config.get('git_config', {}).get('init_git', True):
             initialize_git(base_path, config)
         
-        # Set up virtual environment if configured
-        if config and config.get('venv_config', {}).get('create_venv', True):
-            python_version = config.get('python_version', {}).get('min_version')
-            setup_virtual_environment(base_path, python_version)
+        # # Set up virtual environment if configured
+        # if config and config.get('venv_config', {}).get('create_venv', True):
+        #     python_version = config.get('python_version', {}).get('min_version')
+        #     setup_virtual_environment(base_path, python_version)
+            
+        #     # Install dev dependencies
+        #     venv_python = base_path / 'venv' / 'bin' / 'python'
+        #     subprocess.run([str(venv_python), '-m', 'pip', 'install', '-e', '.[dev]'], cwd=base_path, check=True)
+        #     logger.info("Installed dev dependencies")
             
         logger.info(f"Successfully created project structure for {project_name}")
         
     except Exception as e:
+        print(e)
         logger.error(f"Failed to create project structure: {e}")
         # Clean up if project creation fails
-        if base_path.exists():
-            shutil.rmtree(base_path)
+        # if base_path.exists():
+        #     shutil.rmtree(base_path)
         raise FileOperationError(f"Failed to create project structure: {e}")
 
 def validate_project_path(path: Path) -> None:

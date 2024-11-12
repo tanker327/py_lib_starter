@@ -17,7 +17,7 @@ A sophisticated command-line tool for generating standardized Python library pro
 ## Project Structure
 
 ```
-library_setup/
+py_lib_starter/
 ├── __init__.py
 ├── main.py              # Main script and CLI handling
 ├── templates/
@@ -224,7 +224,7 @@ Generated projects include configuration for:
 1. **Permission Errors**:
    ```bash
    # Ensure you have write permissions
-   chmod +x library_setup/main.py
+   chmod +x main.py
    ```
 
 2. **Import Errors**:

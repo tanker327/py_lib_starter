@@ -57,13 +57,16 @@ def get_user_input() -> Tuple[str, str]:
             "Invalid email address. Please enter a valid email address."
         )
     
+    github_username = input("Enter your GitHub username: ").strip()
+    if not github_username:
+        raise UserInputError("GitHub username cannot be empty")
+
     # Confirm information
     print("\nPlease confirm your information:")
-    print(f"Name:  {username}")
-    print(f"Email: {email}")
+    print(f"Name:            {username}")
+    print(f"Email:           {email}")
+    print(f"GitHub Username: {github_username}")
     
-    confirm = input("\nIs this correct? (y/n): ").strip().lower()
-    if confirm not in ['y', 'yes']:
-        raise UserInputError("User cancelled information confirmation")
+    print("\nLet the magic begin...")
     
-    return username, email
+    return username, email, github_username

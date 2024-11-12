@@ -66,10 +66,9 @@ classifiers = [
     "Operating System :: OS Independent",
     "Typing :: Typed",
 ]
-dependencies = []  # Keep empty by default, add specific dependencies as needed
+dependencies = []
 
 [project.optional-dependencies]
-# Development tools
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.1.0",
@@ -79,28 +78,6 @@ dev = [
     "pylint>=2.17.0",
     "pre-commit>=3.3.0",
 ]
-
-# Example optional feature groups (commented out by default)
-# http = [
-#     "requests>=2.28.0",
-#     "httpx>=0.24.0",
-#     "aiohttp>=3.8.0",
-# ]
-# yaml = [
-#     "pyyaml>=6.0",
-# ]
-# data = [
-#     "pandas>=2.0.0",
-#     "numpy>=1.24.0",
-# ]
-# all = [
-#     "requests>=2.28.0",
-#     "httpx>=0.24.0",
-#     "aiohttp>=3.8.0",
-#     "pyyaml>=6.0",
-#     "pandas>=2.0.0",
-#     "numpy>=1.24.0",
-# ]
 
 [project.urls]
 "Homepage" = "https://github.com/username/{project_name}"
@@ -115,11 +92,12 @@ packages = ["src/{project_name}"]
 line-length = {line_length}
 target-version = ['py38']
 include = '\\.pyi?$'
-extend-exclude = '''
-# A regex preceded with ^/ will apply only to files and directories
-# in the root of the project.
-^/docs/
-'''
+extend-exclude = """
+# Exclude examples:
+/docs/
+/build/
+/dist/
+"""
 
 [tool.isort]
 profile = "black"
@@ -222,14 +200,4 @@ ignore = [
 ]
 target-version = "py38"
 line-length = {line_length}
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.semantic_release]
-version_variable = ["src/{project_name}/__init__.py:__version__"]
-branch = "main"
-upload_to_pypi = false
-build_command = "python -m build"
 '''
