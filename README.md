@@ -40,8 +40,8 @@ my_library/
 
 1. Download the script:
 ```bash
-curl -O https://raw.githubusercontent.com/your-repo/setup_library.py
-# or wget https://raw.githubusercontent.com/your-repo/setup_library.py
+curl -O https://github.com/tanker327/py_lib_starter/setup_library.py
+# or wget https://github.com/tanker327/py_lib_starter/setup_library.py
 ```
 
 2. Make it executable (Unix/Linux):
@@ -199,7 +199,3 @@ python -m pytest
 ## Contact
 
 For questions and support, please raise an issue in the GitHub repository.
-
----
-
-Remember to replace `https://raw.githubusercontent.com/your-repo/setup_library.py` with the actual URL where you host the script.
