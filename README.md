@@ -1,201 +1,258 @@
-# Python Library Setup Script
+# Python Library Setup Tool
 
-A command-line tool to automatically generate a standardized Python library project structure. This script creates a complete project scaffold with all necessary files, configurations, and documentation for creating internal Python libraries.
+A sophisticated command-line tool for generating standardized Python library project structures with modern best practices, comprehensive configurations, and development tools.
 
 ## Features
 
-- 📁 Creates standardized project structure
-- ⚙️ Generates all necessary configuration files
-- 📝 Sets up documentation templates
-- 🧪 Includes test infrastructure
-- 🐍 Follows Python best practices
-- 📦 Modern packaging setup with `pyproject.toml`
+- 🎯 Interactive project setup with user information collection
+- 📁 Standardized project structure generation
+- ⚙️ Modern configuration with pyproject.toml
+- 🐍 Virtual environment setup
+- 🔧 Development tools integration (pytest, black, isort, mypy)
+- 📝 Comprehensive documentation templates
+- 🔒 Git initialization with hooks
+- 🎨 Customizable project templates
+- 🛠️ Modular and extensible architecture
 
-## Project Structure Generated
+## Project Structure
 
 ```
-my_library/
-├── src/
-│   └── my_library/
-│       ├── __init__.py      # Package initialization
-│       ├── core.py          # Core functionality
-│       ├── utils.py         # Utility functions
-│       └── exceptions.py    # Custom exceptions
-├── tests/
+library_setup/
+├── __init__.py
+├── main.py              # Main script and CLI handling
+├── templates/
 │   ├── __init__.py
-│   ├── test_core.py        # Core tests
-│   └── test_utils.py       # Utility tests
-├── docs/
-│   ├── api.md              # API documentation
-│   ├── getting_started.md  # Getting started guide
-│   └── examples.md         # Usage examples
-├── pyproject.toml          # Project configuration
-├── setup.cfg              # Setup configuration
-├── README.md             # Project README
-├── CHANGELOG.md         # Version changelog
-└── .gitignore          # Git ignore rules
+│   ├── pyproject.py     # pyproject.toml template
+│   ├── setup_cfg.py     # setup.cfg template
+│   ├── readme.py        # README.md template
+│   ├── gitignore.py     # .gitignore template
+│   ├── docs.py          # Documentation templates
+│   ├── core.py         # Core module templates
+│   ├── tests.py        # Test file templates
+│   └── changelog.py    # CHANGELOG.md template
+├── utils/
+│   ├── __init__.py
+│   ├── file_ops.py     # File operations
+│   ├── validation.py   # Input validation
+│   └── user_input.py   # User input handling
+└── config/
+    ├── __init__.py
+    └── default.py      # Default configuration
 ```
 
 ## Installation
 
-1. Download the script:
+1. Clone the repository:
 ```bash
-curl -O https://github.com/tanker327/py_lib_starter/setup_library.py
-# or wget https://github.com/tanker327/py_lib_starter/setup_library.py
+git clone https://github.com/tanker327/py_lib_starter.git
+cd library-setup
 ```
 
-2. Make it executable (Unix/Linux):
+2. Create and activate a virtual environment:
 ```bash
-chmod +x setup_library.py
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install the package in development mode:
+```bash
+pip install -e .
 ```
 
 ## Usage
 
 ### Basic Usage
 
+Create a new Python library project:
 ```bash
-python setup_library.py my_library_name
+python -m library_setup my_project_name
 ```
 
-### Specify Custom Path
+The tool will:
+1. Ask for your name and email
+2. Create the project structure
+3. Initialize git repository
+4. Set up virtual environment
+5. Configure development tools
+
+### Command Line Options
 
 ```bash
-python setup_library.py my_library_name --path /path/to/projects
+python -m library_setup [OPTIONS] PROJECT_NAME
+
+Options:
+  --path PATH          Base path for project creation
+  --full-readme        Generate comprehensive README
+  -h, --help          Show help message
 ```
 
-## Examples
+### Generated Project Structure
 
-### Example 1: Creating a Data Processing Library
+The tool creates a standardized project structure:
 
-```bash
-python setup_library.py data_processing_lib
-cd data_processing_lib
+```
+my_project/
+├── src/
+│   └── my_project/
+│       ├── __init__.py      # Package initialization
+│       ├── core.py          # Core functionality
+│       ├── utils.py         # Utility functions
+│       └── exceptions.py    # Custom exceptions
+├── tests/
+│   ├── __init__.py
+│   ├── test_core.py
+│   └── test_utils.py
+├── docs/
+│   ├── api.md
+│   ├── getting_started.md
+│   └── examples.md
+├── scripts/            # Utility scripts
+├── examples/           # Usage examples
+├── pyproject.toml     # Project configuration
+├── setup.cfg          # Setup configuration
+├── README.md         # Project documentation
+├── CHANGELOG.md      # Version changelog
+└── .gitignore       # Git ignore rules
 ```
 
-This creates a library structure ready for implementing data processing functionality:
+### Configuration
+
+The tool uses a modular configuration system defined in `config/default.py`:
 
 ```python
-# src/data_processing_lib/core.py
-from typing import List, Any
-
-class DataProcessor:
-    def process(self, data: List[Any]) -> List[Any]:
-        return data
-
-# Usage
-from data_processing_lib import DataProcessor
-processor = DataProcessor()
-result = processor.process([1, 2, 3])
+# Custom configuration example
+config = {
+    'metadata': {
+        'author': 'John Doe',
+        'author_email': 'john@example.com',
+    },
+    'git_config': {
+        'init_git': True,
+        'git_hooks': {
+            'pre-commit': [
+                'black .',
+                'isort .',
+                'pytest',
+            ],
+        },
+    },
+    'venv_config': {
+        'create_venv': True,
+    },
+}
 ```
 
-### Example 2: Creating a Machine Learning Utils Library
+### Development Tools
 
-```bash
-python setup_library.py ml_utils --path ~/projects
-cd ~/projects/ml_utils
-```
+Generated projects include configuration for:
 
-The generated structure is ready for ML utility functions:
+- **Code Formatting**: black, isort
+- **Type Checking**: mypy
+- **Testing**: pytest with coverage
+- **Linting**: pylint, ruff
+- **Git Hooks**: pre-commit hooks
+- **Documentation**: Markdown templates
 
-```python
-# src/ml_utils/core.py
-import numpy as np
+## Features in Detail
 
-class ModelEvaluator:
-    def calculate_metrics(self, y_true, y_pred):
-        return {
-            "accuracy": np.mean(y_true == y_pred),
-            "samples": len(y_true)
-        }
+### 1. Project Templates
 
-# Usage
-from ml_utils import ModelEvaluator
-evaluator = ModelEvaluator()
-metrics = evaluator.calculate_metrics(y_true, y_pred)
-```
+- **Modern Configuration**: Uses pyproject.toml with comprehensive settings
+- **Type Hints**: All template code includes type hints
+- **Documentation**: Ready-to-use documentation structure
+- **Testing**: Pre-configured test suite with pytest
 
-## Post-Generation Steps
+### 2. Development Workflow
 
-1. Initialize Git repository:
-```bash
-git init
-```
+- **Git Integration**: Automatic repository initialization
+- **Virtual Environment**: Python environment setup
+- **Development Tools**: Pre-configured development tools
+- **Code Quality**: Integrated code quality tools
 
-2. Install the package in development mode:
-```bash
-pip install -e ".[dev]"
-```
+### 3. Project Structure
 
-3. Run the tests:
-```bash
-pytest
-```
+- **Source Layout**: Uses the `src/` layout for better packaging
+- **Tests**: Separate test directory with examples
+- **Documentation**: Comprehensive documentation structure
+- **Scripts**: Directory for utility scripts
 
-## Configuration
+### 4. Customization
 
-The generated project includes several pre-configured tools:
+- **Templates**: Easily modify templates in the templates/ directory
+- **Configuration**: Customize default settings in config/default.py
+- **File Operations**: Extend file operations in utils/file_ops.py
 
-- **Black**: Code formatting
-- **isort**: Import sorting
-- **mypy**: Static type checking
-- **pytest**: Testing framework
+## Best Practices Implemented
 
-### Development Dependencies
+1. **Project Structure**:
+   - src/ layout for better packaging
+   - Separate test directory
+   - Comprehensive documentation
 
-The project is set up with development dependencies in `pyproject.toml`:
+2. **Development Tools**:
+   - Modern code formatting
+   - Type checking
+   - Comprehensive testing
+   - Automated quality checks
 
-```toml
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0",
-    "black>=22.0.0",
-    "isort>=5.0.0",
-    "mypy>=0.950",
-]
-```
+3. **Documentation**:
+   - API documentation
+   - Getting started guide
+   - Usage examples
+   - Change log
 
-## Best Practices
-
-The generated project structure follows these best practices:
-
-1. **Source Layout**: Uses the `src/` layout for better packaging
-2. **Type Hints**: All template code includes type hints
-3. **Documentation**: Includes templates for API docs and examples
-4. **Testing**: Ready-to-use test infrastructure
-5. **Logging**: Built-in logging setup
-6. **Exception Handling**: Custom exception hierarchy
-
-## License
-
-This script is licensed under the MIT License. See the LICENSE file for details.
+4. **Version Control**:
+   - Git initialization
+   - Pre-configured hooks
+   - Comprehensive .gitignore
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests:
+   ```bash
+   pytest
+   ```
+5. Submit a pull request
 
-## Common Issues and Solutions
+## Troubleshooting
 
-### Issue: Permission Denied
+### Common Issues
 
-```bash
-# Solution:
-chmod +x setup_library.py
-```
+1. **Permission Errors**:
+   ```bash
+   # Ensure you have write permissions
+   chmod +x library_setup/main.py
+   ```
 
-### Issue: Import Errors After Installation
+2. **Import Errors**:
+   ```bash
+   # Install in development mode
+   pip install -e .
+   ```
 
-```bash
-# Solution:
-pip install -e ".[dev]"
-```
+3. **Git Initialization Fails**:
+   ```bash
+   # Ensure git is installed
+   git --version
+   ```
 
-### Issue: Tests Not Found
+### Support
 
-```bash
-# Solution:
-python -m pytest
-```
+For issues and questions:
+1. Check the [documentation](docs/)
+2. Open an issue on GitHub
+3. Contact the maintainers
 
-## Contact
+## License
 
-For questions and support, please raise an issue in the GitHub repository.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Inspired by modern Python packaging best practices
+- Built with tools and patterns from the Python community
+- Thanks to all contributors and users
+
